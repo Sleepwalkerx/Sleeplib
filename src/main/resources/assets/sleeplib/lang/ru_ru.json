@@ -1,0 +1,11 @@
+{
+   "_" : "================================================== Ответы ==================================================",
+
+   "response.sleeplib.error.fucking_hackers.text": "Куда ты лезешь, мальчик?",
+   "response.sleeplib.error.no_permission.text": "Нет прав",
+   "response.sleeplib.error.unexpected.text": "Непредвиденная ошибка",
+   "response.sleeplib.error.no_implementation.text": "Нет никакой реализации",
+   "response.sleeplib.error.unsupported.text": "Не поддерживается",
+   "response.sleeplib.error.bad_data.text": "Неверные данные",
+   "response.sleeplib.info.request_executing.text": "Запрос выполняется"
+}

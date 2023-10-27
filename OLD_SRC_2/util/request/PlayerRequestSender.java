@@ -1,0 +1,61 @@
+package com.sleepwalker.sleeplib.util.request;
+
+import com.mojang.authlib.GameProfile;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.permission.PermissionAPI;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class PlayerRequestSender implements IRequestSender {
+
+    @Nonnull
+    private final GameProfile profile;
+
+    public PlayerRequestSender(@Nonnull GameProfile profile) {
+        this.profile = profile;
+    }
+
+    public PlayerRequestSender(@Nonnull ServerPlayerEntity player) {
+        this.profile = player.getGameProfile();
+    }
+
+    @Override
+    public boolean hasPermission(@Nonnull String node) {
+        return PermissionAPI.hasPermission(profile, node, null);
+    }
+
+    @Override
+    public void sendMessage(@Nonnull ITextComponent message) {
+        ServerPlayerEntity player = getPlayer();
+        if(player != null){
+            player.sendMessage(message, Util.NIL_UUID);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return profile.getName();
+    }
+
+    @Nonnull
+    public GameProfile getProfile() {
+        return profile;
+    }
+
+    @Nullable
+    public ServerPlayerEntity getPlayer(){
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if(server == null){
+            return null;
+        }
+        else {
+            return server.getPlayerList().getPlayer(profile.getId());
+        }
+    }
+}
