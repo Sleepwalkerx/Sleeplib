@@ -31,11 +31,6 @@ public class PlayerRequestSender implements IRequestSender {
     }
 
     @Override
-    public void sendMessage(@Nonnull ITextComponent message) {
-
-    }
-
-    @Override
     public void sendMessage(@Nonnull ITextComponent message, boolean notifyAdmins) {
         ServerPlayerEntity player = getPlayer();
         if(player != null){

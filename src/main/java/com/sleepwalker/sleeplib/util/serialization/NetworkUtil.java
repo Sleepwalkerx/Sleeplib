@@ -15,6 +15,7 @@ package com.sleepwalker.sleeplib.util.serialization;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -43,12 +44,12 @@ public final class NetworkUtil {
 
     public static <K, V> void writeMap(
         @Nonnull PacketBuffer buffer, @Nonnull Map<K, V> map,
-        @Nonnull BiConsumer<PacketBuffer, K> keyConsumer, @Nonnull BiConsumer<PacketBuffer, V> valueConsumer
+        @Nonnull BiConsumer<PacketBuffer, K> keyWriter, @Nonnull BiConsumer<PacketBuffer, V> valueWriter
     ) {
         buffer.writeVarInt(map.size());
         map.forEach((k, v) -> {
-            keyConsumer.accept(buffer, k);
-            valueConsumer.accept(buffer, v);
+            keyWriter.accept(buffer, k);
+            valueWriter.accept(buffer, v);
         });
     }
 
@@ -108,13 +109,13 @@ public final class NetworkUtil {
     }
 
     @Nonnull
-    public static <V> List<V> readArrayList(@Nonnull PacketBuffer buffer, @Nonnull Function<PacketBuffer, V> valueSupplier) {
-        return readCollection(buffer, new ArrayList<>(), valueSupplier);
+    public static <V> List<V> readArrayList(@Nonnull PacketBuffer buffer, @Nonnull Function<PacketBuffer, V> reader) {
+        return readCollection(buffer, new ArrayList<>(), reader);
     }
 
     @Nonnull
-    public static <V> Set<V> readHashSet(@Nonnull PacketBuffer buffer, @Nonnull Function<PacketBuffer, V> valueSupplier) {
-        return readCollection(buffer, new HashSet<>(), valueSupplier);
+    public static <V> Set<V> readHashSet(@Nonnull PacketBuffer buffer, @Nonnull Function<PacketBuffer, V> reader) {
+        return readCollection(buffer, new HashSet<>(), reader);
     }
 
     public static void writeStringArray(@Nonnull PacketBuffer pf, @Nonnull String[] array){
@@ -132,5 +133,22 @@ public final class NetworkUtil {
             array[i] = pf.readString();
         }
         return array;
+    }
+
+    public static <T> void writeNullable(@Nonnull PacketBuffer buffer, @Nullable T value, @Nonnull BiConsumer<PacketBuffer, T> writer){
+        buffer.writeBoolean(value != null);
+        if(value != null){
+            writer.accept(buffer, value);
+        }
+    }
+
+    @Nullable
+    public static <T> T readNullable(@Nonnull PacketBuffer buffer, @Nonnull Function<PacketBuffer, T> reader){
+        if(buffer.readBoolean()){
+            return reader.apply(buffer);
+        }
+        else {
+            return null;
+        }
     }
 }

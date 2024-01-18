@@ -15,7 +15,6 @@ import javax.annotation.Nonnull;
 public final class ServerUtil {
 
     public static void broadcastToAdmins(@Nonnull IRequestSender sender, @Nonnull ITextComponent message) {
-
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if(server == null){
             return;

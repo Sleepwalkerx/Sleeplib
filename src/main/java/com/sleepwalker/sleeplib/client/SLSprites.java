@@ -84,16 +84,20 @@ public final class SLSprites {
     @Nonnull public static final Drawable DOWN_ARROW_ENABLED = newModal(DOWN_ARROW_TEXTURE, 6, 4);
     @Nonnull public static final Drawable DOWN_ARROW_DISABLED = newModal(DOWN_ARROW_TEXTURE, 6, 0, 6, 4);
 
-    @Nonnull public static final TextureSource EDIT_ICON_TEXTURE = texture("edit_icon", 25, 9);
-    @Nonnull public static final Drawable GREY_PLUS = newModal(EDIT_ICON_TEXTURE, 0, 0, 6, 6);
-    @Nonnull public static final Drawable GREEN_PLUS = newModal(EDIT_ICON_TEXTURE, 6, 0, 6, 6);
-    @Nonnull public static final Drawable GREY_MINUS = newModal(EDIT_ICON_TEXTURE, 0, 7, 6, 2);
-    @Nonnull public static final Drawable GREEN_MINUS = newModal(EDIT_ICON_TEXTURE, 6, 7, 6, 2);
-    @Nonnull public static final Drawable TRASH = newModal(EDIT_ICON_TEXTURE, 12, 1, 6, 8);
-    @Nonnull public static final Drawable CHECK_MARK = newModal(EDIT_ICON_TEXTURE, 18, 2, 7, 7);
-    @Nonnull public static final Drawable DUPLICATE = newModal(EDIT_ICON_TEXTURE, 0, 9, 8, 8);
-    @Nonnull public static final Drawable CROSS = newModal(EDIT_ICON_TEXTURE, 14, 12, 5, 5);
-    @Nonnull public static final Drawable STYLUS = newModal(EDIT_ICON_TEXTURE, 19, 11, 6, 6);
+    public static final TextureSource POINTING_TRIANGLE_TEXTURE = texture("pointing_triangle", 12, 4);
+    public static final Drawable DOWN_POINTING_TRIANGLE = newModal(POINTING_TRIANGLE_TEXTURE, 6, 4);
+    public static final Drawable UP_POINTING_TRIANGLE = newModal(POINTING_TRIANGLE_TEXTURE, 6, 0, 6, 4);
+
+    @Nonnull public static final TextureSource EDITING_TEXTURE = texture("editing", 25, 17);
+    @Nonnull public static final Drawable GREY_PLUS = newModal(EDITING_TEXTURE, 0, 0, 6, 6);
+    @Nonnull public static final Drawable GREEN_PLUS = newModal(EDITING_TEXTURE, 6, 0, 6, 6);
+    @Nonnull public static final Drawable GREY_MINUS = newModal(EDITING_TEXTURE, 0, 7, 6, 2);
+    @Nonnull public static final Drawable GREEN_MINUS = newModal(EDITING_TEXTURE, 6, 7, 6, 2);
+    @Nonnull public static final Drawable TRASH = newModal(EDITING_TEXTURE, 12, 1, 6, 8);
+    @Nonnull public static final Drawable CHECK_MARK = newModal(EDITING_TEXTURE, 18, 2, 7, 7);
+    @Nonnull public static final Drawable DUPLICATE = newModal(EDITING_TEXTURE, 0, 9, 8, 8);
+    @Nonnull public static final Drawable CROSS = newModal(EDITING_TEXTURE, 14, 12, 5, 5);
+    @Nonnull public static final Drawable STYLUS = newModal(EDITING_TEXTURE, 19, 11, 6, 6);
 
     @Nonnull public static final TextureSource NAVIGATION_TEXTURE = texture("navigation", 26, 7);
     @Nonnull public static final Drawable RIGHTWARDS = newModal(NAVIGATION_TEXTURE, 0, 0, 13, 7);

@@ -15,10 +15,10 @@ class UIPoint(
     val y: PositionConstraint
 ) : UIComponent() {
     val relativeX: Float
-        get() = constraints.getX()
+        get() = constraints.getXValue()
 
     val relativeY: Float
-        get() = constraints.getY()
+        get() = constraints.getYValue()
 
     val absoluteX: Float
         get() = getLeft()

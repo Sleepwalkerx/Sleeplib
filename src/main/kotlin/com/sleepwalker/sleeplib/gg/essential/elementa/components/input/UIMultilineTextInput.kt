@@ -12,6 +12,7 @@ import java.awt.Color
 class UIMultilineTextInput @JvmOverloads constructor(
     placeholder: String = "",
     shadow: Boolean = true,
+    placeholderColor: Color = Color.WHITE,
     selectionBackgroundColor: Color = Color.WHITE,
     selectionForegroundColor: Color = Color(64, 139, 229),
     allowInactiveSelection: Boolean = false,
@@ -21,6 +22,7 @@ class UIMultilineTextInput @JvmOverloads constructor(
 ) : AbstractTextInput(
     placeholder,
     shadow,
+    placeholderColor,
     selectionBackgroundColor,
     selectionForegroundColor,
     allowInactiveSelection,
@@ -76,7 +78,7 @@ class UIMultilineTextInput @JvmOverloads constructor(
         beforeDraw(matrixStack)
 
         val textScale = getTextScale()
-        if (!active && !hasText()) {
+        if (!editable && !hasText()) {
             val textToDraw = splitStringToWidthTruncated(placeholder, getWidth(), textScale, 1)[0]
             drawUnselectedText(matrixStack, textToDraw, getLeft(), 0)
             return super.draw(matrixStack)
@@ -84,7 +86,7 @@ class UIMultilineTextInput @JvmOverloads constructor(
 
         if (hasSelection()) {
             cursorComponent.hide(instantly = true)
-        } else if (active) {
+        } else if (editable) {
             cursorComponent.unhide()
             val (cursorPosX, cursorPosY) = cursor.toScreenPos()
             cursorComponent.setX((cursorPosX ).pixels())

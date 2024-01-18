@@ -16,9 +16,7 @@ public class SpriteBoxCollider {
     }
 
     public boolean isMouseOver(double mX, double mY, double pX, double pY, double width, double height) {
-
         for (Point point : points){
-
             double pointX = pX + width * point.u0;
             double pointY = pY + height * point.v0;
 
@@ -26,7 +24,6 @@ public class SpriteBoxCollider {
                 return true;
             }
         }
-
         return false;
     }
 

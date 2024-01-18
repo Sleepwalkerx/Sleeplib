@@ -11,6 +11,7 @@ import java.awt.Color
 open class UITextInput @JvmOverloads constructor(
     placeholder: String = "",
     shadow: Boolean = true,
+    placeholderColor: Color = Color.WHITE,
     selectionBackgroundColor: Color = Color.WHITE,
     selectionForegroundColor: Color = Color(64, 139, 229),
     allowInactiveSelection: Boolean = false,
@@ -20,6 +21,7 @@ open class UITextInput @JvmOverloads constructor(
 ) : AbstractTextInput(
     placeholder,
     shadow,
+    placeholderColor,
     selectionBackgroundColor,
     selectionForegroundColor,
     allowInactiveSelection,
@@ -92,7 +94,7 @@ open class UITextInput @JvmOverloads constructor(
 
     override fun recalculateDimensions() {
         if (minWidth != null && maxWidth != null) {
-            val width = if (!hasText() && !this.active) {
+            val width = if (!hasText() && !this.editable) {
                 placeholderWidth
             } else {
                 getTextForRender().width(getTextScale()) + 1 /* cursor */
@@ -112,8 +114,8 @@ open class UITextInput @JvmOverloads constructor(
     override fun draw(matrixStack: UMatrixStack) {
         beforeDrawCompat(matrixStack)
 
-        if (!active && !hasText()) {
-            getFontProvider().drawString(matrixStack, placeholder, getColor(), getLeft(), getTop(), 10f, getTextScale(), shadow)
+        if (!editable && !hasText()) {
+            getFontProvider().drawString(matrixStack, placeholder, placeholderColor, getLeft(), getTop(), 10f, getTextScale(), shadow)
             return super.draw(matrixStack)
         }
 
@@ -138,7 +140,7 @@ open class UITextInput @JvmOverloads constructor(
                 drawUnselectedTextCompat(matrixStack, lineText.substring(selectionEnd().column), currentX, row = 0)
             }
         } else {
-            if (active) {
+            if (editable) {
                 cursorComponent.setY(basicYConstraint {
                     getTop()
                 })

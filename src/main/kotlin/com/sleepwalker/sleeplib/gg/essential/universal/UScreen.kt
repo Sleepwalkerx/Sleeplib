@@ -94,7 +94,6 @@ abstract class UScreen(
     }
 
     final override fun keyPressed(keyCode: Int, scanCode: Int, modifierCode: Int): Boolean {
-
         if(keyCode == GLFW.GLFW_KEY_ESCAPE && shouldCloseOnEsc()){
             closeScreen()
             return true

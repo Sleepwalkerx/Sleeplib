@@ -1,11 +1,10 @@
 {
-   "_" : "================================================= Response =================================================",
-
-   "response.sleeplib.error.fucking_hackers.text": "Where are you going, boy?",
-   "response.sleeplib.error.no_permission.text": "No Permission",
-   "response.sleeplib.error.unexpected.text": "Unexpected error",
-   "response.sleeplib.error.no_implementation.text": "There is no implementation",
-   "response.sleeplib.error.unsupported.text": "Unsupported",
-   "response.sleeplib.error.bad_data.text": "Bad Data",
-   "response.sleeplib.info.request_executing.text": "Request executing"
+    "_": "================================================= Response =================================================",
+    "response.sleeplib.error.fucking_hackers.text": "Where are you going, boy?",
+    "response.sleeplib.error.no_permission.text": "No Permission",
+    "response.sleeplib.error.unexpected.text": "Unexpected error",
+    "response.sleeplib.error.no_implementation.text": "There is no implementation",
+    "response.sleeplib.error.unsupported.text": "Unsupported",
+    "response.sleeplib.error.bad_data.text": "Bad Data",
+    "response.sleeplib.info.request_executing.text": "Request executing"
 }

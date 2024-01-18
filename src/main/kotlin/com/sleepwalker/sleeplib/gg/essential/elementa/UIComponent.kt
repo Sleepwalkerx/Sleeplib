@@ -12,6 +12,9 @@ import com.sleepwalker.sleeplib.gg.essential.elementa.effects.ScissorEffect
 import com.sleepwalker.sleeplib.gg.essential.elementa.events.UIClickEvent
 import com.sleepwalker.sleeplib.gg.essential.elementa.events.UIScrollEvent
 import com.sleepwalker.sleeplib.gg.essential.elementa.font.FontProvider
+import com.sleepwalker.sleeplib.gg.essential.elementa.state.BasicState
+import com.sleepwalker.sleeplib.gg.essential.elementa.state.MappedState
+import com.sleepwalker.sleeplib.gg.essential.elementa.state.State
 import com.sleepwalker.sleeplib.gg.essential.elementa.utils.*
 import com.sleepwalker.sleeplib.gg.essential.elementa.state.v2.ReferenceHolder
 import com.sleepwalker.sleeplib.gg.essential.elementa.utils.requireMainThread
@@ -52,9 +55,32 @@ abstract class UIComponent : Observable(), ReferenceHolder {
     val effects = mutableListOf<Effect>()
 
     private var childrenLocked = 0
+
+    protected var activeState: MappedState<Boolean, Boolean> = BasicState(true).map {  it }
+    var active: Boolean
+        get() =  activeState.get()
+        set(value)  { activeState.set(value) }
     init {
         children.addObserver { _, _ -> requireChildrenUnlocked() }
         children.addObserver { _, event -> setWindowCacheOnChangedChild(event) }
+
+        activeState.onSetValue { active ->
+            if(!active){
+                if(currentlyHovered){
+                    for (listener in mouseLeaveListeners)
+                        this.listener()
+                    currentlyHovered = false
+                }
+                if(lastDraggedMouseX != null || lastDraggedMouseY != null){
+                    for (listener in mouseReleaseListeners)
+                        this.listener()
+
+                    lastDraggedMouseX = null
+                    lastDraggedMouseY = null
+                }
+            }
+            this.forEachChild {   it.active = active }
+        }
     }
 
     open lateinit var parent: UIComponent
@@ -86,6 +112,7 @@ abstract class UIComponent : Observable(), ReferenceHolder {
     val keyTypedListeners = mutableListOf<UIComponent.(typedChar: Char, keyCode: Int) -> Unit>()
 
     private var currentlyHovered = false
+    private var smartHoverHandler = false
     private val beforeHideAnimations = mutableListOf<AnimatingConstraints.() -> Unit>()
     private val afterUnhideAnimations = mutableListOf<AnimatingConstraints.() -> Unit>()
     private val onFocusActions = mutableListOf<UIComponent.() -> Unit>()
@@ -124,6 +151,15 @@ abstract class UIComponent : Observable(), ReferenceHolder {
             is ObservableRemoveEvent -> event.element.value.recursivelySetWindowCache(null)
             is ObservableClearEvent -> event.oldChildren.forEach { it.recursivelySetWindowCache(null) }
         }
+    }
+
+    fun bindActive(newState: State<Boolean>) = apply {
+        activeState.rebind(newState)
+    }
+
+    fun isActive() =  active
+    fun onActiveChanged(method: (Boolean) -> Unit) = apply {
+        activeState.onSetValue(method)
     }
 
     private fun recursivelySetWindowCache(window: Window?) {
@@ -311,6 +347,18 @@ abstract class UIComponent : Observable(), ReferenceHolder {
         this.effects.remove(effect)
     }
 
+    fun hasEffect(effect: Effect): Boolean {
+        return effects.contains(effect)
+    }
+
+    fun <T : Effect> hasEffect(clazz: Class<T>): Boolean {
+        return effects.stream().anyMatch { clazz.isInstance(it) }
+    }
+
+    fun setSmartHoverHandler(smart: Boolean) = apply {
+        this.smartHoverHandler = smart
+    }
+
     fun setChildOf(parent: UIComponent) = apply {
         parent.addChild(this)
     }
@@ -349,25 +397,25 @@ abstract class UIComponent : Observable(), ReferenceHolder {
 
     fun setColor(color: Color) = setColor(color.toConstraint())
 
-    open fun getLeft() = constraints.getX()
+    open fun getLeft() = constraints.getXValue()
 
-    open fun getTop() = constraints.getY()
+    open fun getTop() = constraints.getYValue()
 
     open fun getRight() = getLeft() + getWidth()
 
     open fun getBottom() = getTop() + getHeight()
 
-    open fun getWidth() = constraints.getWidth()
+    open fun getWidth() = constraints.getWidthValue()
 
-    open fun getHeight() = constraints.getHeight()
+    open fun getHeight() = constraints.getHeightValue()
 
-    open fun getRadius() = constraints.getRadius()
+    open fun getRadius() = constraints.getRadiusValue()
 
-    open fun getTextScale() = constraints.getTextScale()
+    open fun getTextScale() = constraints.getTextScaleValue()
 
     open fun getFontProvider() = constraints.fontProvider
 
-    open fun getColor() = constraints.getColor()
+    open fun getColor() = constraints.getColorValue()
 
     open fun isPositionCenter(): Boolean {
         return false
@@ -382,7 +430,21 @@ abstract class UIComponent : Observable(), ReferenceHolder {
      */
     open fun isHovered(): Boolean {
         val (mouseX, mouseY) = getMousePosition()
-        return isPointInside(mouseX, mouseY)
+        if(!isPointInside(mouseX, mouseY)){
+            return false
+        }
+        else if(!smartHoverHandler){
+            return true
+        }
+
+        fun isPart(ui: UIComponent): Boolean {
+            return if(ui == this) true
+            else ui.hasParent && ui.parent != ui && isPart(ui.parent)
+        }
+
+        return cachedWindow?.let {
+            isPart(it.hitTest(mouseX, mouseY))
+        } ?: false
     }
 
     protected fun getMousePosition(): Pair<Float, Float> {
@@ -543,6 +605,8 @@ abstract class UIComponent : Observable(), ReferenceHolder {
     fun beforeChildrenDrawCompat(matrixStack: UMatrixStack) = UMatrixStack.Compat.runLegacyMethod(matrixStack) { beforeChildrenDraw() }
 
     open fun mouseMove(window: Window) {
+        if(!active) return
+
         val hovered = isHovered() && window.hoveredFloatingComponent.let {
             it == null || it == this || isComponentInParentChain(it)
         }
@@ -566,6 +630,8 @@ abstract class UIComponent : Observable(), ReferenceHolder {
      * Most common use is on the [Window] object.
      */
     open fun mouseClick(mouseX: Double, mouseY: Double, button: Int) {
+        if(!active) return
+
         val clicked = hitTest(mouseX.toFloat(), mouseY.toFloat())
 
         lastDraggedMouseX = mouseX
@@ -573,6 +639,7 @@ abstract class UIComponent : Observable(), ReferenceHolder {
         lastClickCount = if (System.currentTimeMillis() - lastClickTime < 500) lastClickCount + 1 else 1
         lastClickTime = System.currentTimeMillis()
 
+        if(!clicked.isActive()) return
         clicked.fireClickEvent(
             UIClickEvent(
                 mouseX.toFloat(),
@@ -603,6 +670,8 @@ abstract class UIComponent : Observable(), ReferenceHolder {
      * Most common use is on the [Window] object.
      */
     open fun mouseRelease() {
+        if(!active)return
+
         for (listener in mouseReleaseListeners)
             this.listener()
 
@@ -618,7 +687,7 @@ abstract class UIComponent : Observable(), ReferenceHolder {
      * Most common use is on the [Window] object.
      */
     open fun mouseScroll(delta: Double) {
-        if (delta == 0.0) return
+        if (delta == 0.0 || !active) return
 
         for (i in children.lastIndex downTo 0) {
             val child = children[i]
@@ -687,7 +756,7 @@ abstract class UIComponent : Observable(), ReferenceHolder {
     }
 
     private inline fun doDragMouse(mouseX: Float, mouseY: Float, button: Int, superCall: UIComponent.() -> Unit) {
-        if (lastDraggedMouseX == mouseX.toDouble() && lastDraggedMouseY == mouseY.toDouble())
+        if (lastDraggedMouseX == mouseX.toDouble() && lastDraggedMouseY == mouseY.toDouble() || !active)
             return
 
         lastDraggedMouseX = mouseX.toDouble()
@@ -703,6 +772,8 @@ abstract class UIComponent : Observable(), ReferenceHolder {
     }
 
     open fun keyType(typedChar: Char, keyCode: Int) {
+        if(!active)return
+
         for (listener in keyTypedListeners)
             this.listener(typedChar, keyCode)
     }

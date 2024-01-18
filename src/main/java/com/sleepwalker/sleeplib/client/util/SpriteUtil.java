@@ -22,6 +22,21 @@ public final class SpriteUtil {
     }
 
     @Nonnull
+    public static ModalSprite newModalFill(@Nonnull TextureSource texture){
+        return newModalFill(texture, texture.getWidth(), texture.getHeight());
+    }
+
+    @Nonnull
+    public static ModalSprite newModalFill(@Nonnull TextureSource texture, int uWidth, int vHeight){
+        return newModalFill(texture, 0, 0, uWidth, vHeight);
+    }
+
+    @Nonnull
+    public static ModalSprite newModalFill(@Nonnull TextureSource texture, int uOffset, int vOffset, int uWidth, int vHeight){
+        return new ModalFillSprite(texture, uOffset, vOffset, uWidth, vHeight);
+    }
+
+    @Nonnull
     public static NineSliceSprite newNineSlice(@Nonnull TextureSource texture, int uOffset, int vOffset, int uWidth, int vHeight, int border){
         return newNineSlice(texture, uOffset, vOffset, uWidth, vHeight, border, border, border, border);
     }

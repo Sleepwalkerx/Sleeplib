@@ -75,7 +75,9 @@ public class ModalSprite implements Drawable {
         buffer.pos(mat, x2, y1, z).tex(maxU, minV).color(r, g, b, a).endVertex();
         buffer.pos(mat, x1, y1, z).tex(minU, minV).color(r, g, b, a).endVertex();
         buffer.finishDrawing();
-        RenderSystem.enableAlphaTest();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
         WorldVertexBufferUploader.draw(buffer);
     }
 }

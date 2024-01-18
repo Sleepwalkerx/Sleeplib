@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.sleepwalker.sleeplib.util.ObjectResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -120,7 +121,6 @@ public final class JsonUtil {
 
     @Nonnull
     public static JsonObject getObjectOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, @Nonnull Supplier<JsonObject> def){
-
         if(jsonObject.has(name)){
             JsonElement element = jsonObject.get(name);
             if(element.isJsonObject()){
@@ -140,7 +140,6 @@ public final class JsonUtil {
 
     @Nonnull
     public static JsonArray getArrayOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, @Nonnull Supplier<JsonArray> defaultValue){
-
         if(jsonObject.has(name)){
             JsonElement element = jsonObject.get(name);
             if(element.isJsonArray()){
@@ -177,7 +176,7 @@ public final class JsonUtil {
                 JsonPrimitive primitive = element.getAsJsonPrimitive();
                 if(primitive.isString()){
                     try {
-                        return Enum.valueOf(def.getDeclaringClass(), primitive.getAsString().toUpperCase(Locale.ROOT));
+                        return Enum.valueOf(def.getDeclaringClass(), primitive.getAsString());
                     }
                     catch (IllegalArgumentException ignore){
                         return def;
@@ -186,7 +185,7 @@ public final class JsonUtil {
             }
         }
 
-        jsonObject.addProperty(name, def.name().toLowerCase(Locale.ROOT));
+        jsonObject.addProperty(name, def.name());
         return def;
     }
 
@@ -200,7 +199,6 @@ public final class JsonUtil {
 
     @Nonnull
     public static <T extends IForgeRegistryEntry<T>> T getRegistryEntryOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, @Nonnull IForgeRegistry<T> registry){
-
         ResourceLocation defKey = registry.getDefaultKey();
         if(defKey == null){
             throw new IllegalArgumentException(String.format("Registry %s does not have a default key", registry.getRegistryName()));
@@ -243,7 +241,6 @@ public final class JsonUtil {
     }
 
     public static int getIntOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, int def){
-
         if(jsonObject.has(name)){
             JsonElement element = jsonObject.get(name);
             if(element.isJsonPrimitive()){
@@ -259,7 +256,6 @@ public final class JsonUtil {
     }
 
     public static long getLongOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, long def){
-
         if(jsonObject.has(name)){
             JsonElement element = jsonObject.get(name);
             if(element.isJsonPrimitive()){
@@ -275,7 +271,6 @@ public final class JsonUtil {
     }
 
     public static float getFloatOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, float def){
-
         if(jsonObject.has(name)){
             JsonElement element = jsonObject.get(name);
             if(element.isJsonPrimitive()){
@@ -291,7 +286,6 @@ public final class JsonUtil {
     }
 
     public static double getDoubleOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, double def){
-
         if(jsonObject.has(name)){
             JsonElement element = jsonObject.get(name);
             if(element.isJsonPrimitive()){
@@ -373,6 +367,25 @@ public final class JsonUtil {
     }
 
     @Nonnull
+    public static ObjectResourceLocation getObjectResourceLocationOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, @Nonnull ObjectResourceLocation def){
+        if(jsonObject.has(name)){
+            JsonElement element = jsonObject.get(name);
+            if(element.isJsonPrimitive()){
+                JsonPrimitive primitive = element.getAsJsonPrimitive();
+                if(primitive.isString()){
+                    ObjectResourceLocation objectResourceLocation = ObjectResourceLocation.tryCreate(primitive.getAsString());
+                    if(objectResourceLocation != null){
+                        return objectResourceLocation;
+                    }
+                }
+            }
+        }
+
+        jsonObject.addProperty(name, def.toString());
+        return def;
+    }
+
+    @Nonnull
     public static Color getColorOrCreate(@Nonnull JsonObject jsonObject, @Nonnull String name, @Nonnull Color def){
         if(jsonObject.has(name)){
             JsonElement element = jsonObject.get(name);
@@ -384,7 +397,10 @@ public final class JsonUtil {
                         val = val.substring(1);
                         try {
                             long i = Long.parseLong(val, 16);
-                            return new Color((i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF, (i >> 24) & 0xFF);
+                            if(i <= 0xFFFFFFL){
+                                i += 0xFF000000L;
+                            }
+                            return new Color((int)((i >> 16) & 0xFFL), (int)((i >> 8) & 0xFFL), (int)(i & 0xFFL), (int)((i >> 24) & 0xFFL));
                         }
                         catch (NumberFormatException ignore){}
                     }
@@ -393,7 +409,10 @@ public final class JsonUtil {
                 else if(primitive.isNumber()){
                     try {
                         long i = primitive.getAsLong();
-                        return new Color((i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF, (i >> 24) & 0xFF);
+                        if(i <= 0xFFFFFFL){
+                            i += 0xFF000000L;
+                        }
+                        return new Color((int)((i >> 16) & 0xFFL), (int)((i >> 8) & 0xFFL), (int)(i & 0xFFL), (int)((i >> 24) & 0xFFL));
                     }
                     catch (NumberFormatException ignore){}
                 }

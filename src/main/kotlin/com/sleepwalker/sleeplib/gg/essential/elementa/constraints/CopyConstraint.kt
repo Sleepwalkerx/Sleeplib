@@ -11,17 +11,17 @@ class CopyConstraintFloat(private val textScale: Boolean = false) : PositionCons
     override var constrainTo: UIComponent? = null
 
     override fun getXPositionImpl(component: UIComponent): Float {
-        return constrainTo?.constraints?.getX()
+        return constrainTo?.constraints?.getXValue()
             ?: throw IllegalStateException("CopyConstraint must be applied to another component.")
     }
 
     override fun getYPositionImpl(component: UIComponent): Float {
-        return constrainTo?.constraints?.getY()
+        return constrainTo?.constraints?.getYValue()
             ?: throw IllegalStateException("CopyConstraint must be applied to another component.")
     }
 
     override fun getWidthImpl(component: UIComponent): Float {
-        return constrainTo?.constraints?.getWidth()
+        return constrainTo?.constraints?.getWidthValue()
             ?: throw IllegalStateException("CopyConstraint must be applied to another component.")
     }
 
@@ -56,14 +56,14 @@ class CopyConstraintFloat(private val textScale: Boolean = false) : PositionCons
 
     override fun getHeightImpl(component: UIComponent): Float {
         return if (textScale) {
-            constrainTo?.constraints?.getTextScale()
+            constrainTo?.constraints?.getTextScaleValue()
                 ?: throw IllegalStateException("CopyConstraint must be applied to another component.")
-        } else constrainTo?.constraints?.getHeight()
+        } else constrainTo?.constraints?.getHeightValue()
             ?: throw IllegalStateException("CopyConstraint must be applied to another component.")
     }
 
     override fun getRadiusImpl(component: UIComponent): Float {
-        return constrainTo?.constraints?.getRadius()
+        return constrainTo?.constraints?.getRadiusValue()
             ?: throw IllegalStateException("CopyConstraint must be applied to another component.")
     }
 }
@@ -76,7 +76,7 @@ class CopyConstraintColor : ColorConstraint {
 
 
     override fun getColorImpl(component: UIComponent): Color {
-        return constrainTo?.constraints?.getColor()
+        return constrainTo?.constraints?.getColorValue()
             ?: throw IllegalStateException("CopyConstraint must be applied to another component.")
     }
 

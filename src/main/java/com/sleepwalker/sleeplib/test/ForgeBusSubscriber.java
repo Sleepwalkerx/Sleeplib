@@ -24,7 +24,12 @@ public class ForgeBusSubscriber {
         event.getDispatcher().register(Commands.literal(SleepLib.MODID)
             .then(Commands.literal("testo")
                 .executes(c -> {
-                    Minecraft.getInstance().displayGuiScreen(new TestoScreen());
+                    try {
+                        Minecraft.getInstance().displayGuiScreen(new TestoScreen());
+                    }
+                    catch (Exception e){
+                        SleepLib.LOGGER.throwing(e);
+                    }
                     return 1;
                 })
             )

@@ -10,6 +10,7 @@ open class UIPasswordInput @JvmOverloads constructor(
     passwordChar: Char = '*',
     placeholder: String = "",
     shadow: Boolean = true,
+    placeholderColor: Color = Color.WHITE,
     selectionBackgroundColor: Color = Color.WHITE,
     selectionForegroundColor: Color = Color(64, 139, 229),
     allowInactiveSelection: Boolean = false,
@@ -19,6 +20,7 @@ open class UIPasswordInput @JvmOverloads constructor(
 ) : UITextInput(
     placeholder,
     shadow,
+    placeholderColor,
     selectionBackgroundColor,
     selectionForegroundColor,
     allowInactiveSelection,

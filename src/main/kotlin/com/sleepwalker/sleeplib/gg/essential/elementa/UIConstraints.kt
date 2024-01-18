@@ -51,7 +51,7 @@ open class UIConstraints(protected val component: UIComponent) : Observable() {
             update(ConstraintType.COLOR)
         }
 
-    open fun getX(): Float {
+    open fun getXValue(): Float {
         return x.getXPosition(component)
     }
 
@@ -59,7 +59,7 @@ open class UIConstraints(protected val component: UIComponent) : Observable() {
         x = constraint
     }
 
-    open fun getY(): Float {
+    open fun getYValue(): Float {
         return y.getYPosition(component)
     }
 
@@ -67,7 +67,7 @@ open class UIConstraints(protected val component: UIComponent) : Observable() {
         y = constraint
     }
 
-    open fun getWidth(): Float {
+    open fun getWidthValue(): Float {
         return width.getWidth(component)
     }
 
@@ -75,7 +75,7 @@ open class UIConstraints(protected val component: UIComponent) : Observable() {
         width = constraint
     }
 
-    open fun getHeight(): Float {
+    open fun getHeightValue(): Float {
         return height.getHeight(component)
     }
 
@@ -83,7 +83,7 @@ open class UIConstraints(protected val component: UIComponent) : Observable() {
         height = constraint
     }
 
-    open fun getRadius(): Float {
+    open fun getRadiusValue(): Float {
         return radius.getRadius(component)
     }
 
@@ -91,7 +91,7 @@ open class UIConstraints(protected val component: UIComponent) : Observable() {
         radius = constraint
     }
 
-    open fun getTextScale(): Float {
+    open fun getTextScaleValue(): Float {
         return textScale.getTextScale(component)
     }
 
@@ -103,7 +103,7 @@ open class UIConstraints(protected val component: UIComponent) : Observable() {
        fontProvider = setFontProvider
    }
 
-    open fun getColor(): Color {
+    open fun getColorValue(): Color {
         return color.getColor(component)
     }
 

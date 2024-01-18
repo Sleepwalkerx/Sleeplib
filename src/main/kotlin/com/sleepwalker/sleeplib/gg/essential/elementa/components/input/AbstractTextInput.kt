@@ -19,6 +19,7 @@ import kotlin.math.abs
 abstract class AbstractTextInput(
     var placeholder: String,
     var shadow: Boolean,
+    protected val placeholderColor: Color,
     protected val selectionBackgroundColor: Color,
     protected val selectionForegroundColor: Color,
     protected val allowInactiveSelection: Boolean,
@@ -26,7 +27,7 @@ abstract class AbstractTextInput(
     protected val inactiveSelectionForegroundColor: Color,
     protected val cursorColor: Color
 ) : UIComponent() {
-    protected var active = false
+    protected var editable = false
     var lineHeight = 9f
         set(value) {
             cursorComponent.setHeight(value.pixels())
@@ -80,7 +81,7 @@ abstract class AbstractTextInput(
         setHeight(lineHeight.pixels())
 
         onKeyType { typedChar, keyCode ->
-            if (!active) return@onKeyType
+            if (!editable) return@onKeyType
 
             if (keyCode == UKeyboard.KEY_ESCAPE) {
                 releaseWindowFocus()
@@ -222,7 +223,7 @@ abstract class AbstractTextInput(
         }
 
         onMouseClick { event ->
-            if (!active || event.mouseButton != 0)
+            if (!editable || event.mouseButton != 0)
                 return@onMouseClick
 
             val clickedVisualPos = screenPosToVisualPos(event.relativeX, event.relativeY)
@@ -328,21 +329,21 @@ abstract class AbstractTextInput(
         }
 
         onFocus {
-            setActive(true)
+            setEditable(true)
         }
 
         onFocusLost {
-            setActive(false)
+            setEditable(false)
         }
 
         cursorComponent.animateAfterUnhide {
             setColorAnimation(Animations.OUT_CIRCULAR, 0.5f, cursorColor.toConstraint())
             onComplete {
-                if (!active) return@onComplete
+                if (!editable) return@onComplete
                 cursorComponent.animate {
                     setColorAnimation(Animations.IN_CIRCULAR, 0.5f, Color(255, 255, 255, 0).toConstraint())
                     onComplete {
-                        if (active) animateCursor()
+                        if (editable) animateCursor()
                     }
                 }
             }
@@ -378,8 +379,8 @@ abstract class AbstractTextInput(
     protected abstract fun textToLines(text: String): List<String>
     protected abstract fun onEnterPressed()
 
-    fun setActive(isActive: Boolean) = apply {
-        active = isActive
+    fun setEditable(isActive: Boolean) = apply {
+        editable = isActive
 
         if (isActive) {
             cursorComponent.unhide()
@@ -392,7 +393,7 @@ abstract class AbstractTextInput(
         }
     }
 
-    fun isActive() = active
+    fun isEditable() = editable
 
     fun onUpdate(listener: (text: String) -> Unit) = apply {
         updateAction = listener
@@ -669,16 +670,16 @@ abstract class AbstractTextInput(
     }
 
     protected open fun animateCursor() {
-        if (!active) return
+        if (!editable) return
 
         cursorComponent.animate {
             setColorAnimation(Animations.OUT_CIRCULAR, 0.5f, cursorColor.toConstraint())
             onComplete {
-                if (!active) return@onComplete
+                if (!editable) return@onComplete
                 cursorComponent.animate {
                     setColorAnimation(Animations.IN_CIRCULAR, 0.5f, Color(255, 255, 255, 0).toConstraint())
                     onComplete {
-                        if (active) animateCursor()
+                        if (editable) animateCursor()
                     }
                 }
             }
@@ -720,7 +721,7 @@ abstract class AbstractTextInput(
     protected open fun drawSelectedText(matrixStack: UMatrixStack, text: String, left: Float, right: Float, row: Int) {
         UIBlock.drawBlock(
             matrixStack,
-            if (active) selectionBackgroundColor else inactiveSelectionBackgroundColor,
+            if (editable) selectionBackgroundColor else inactiveSelectionBackgroundColor,
             left.toDouble() - horizontalScrollingOffset,
             getTop().toDouble() + (lineHeight * row * getTextScale()) + verticalScrollingOffset,
             right.toDouble() - horizontalScrollingOffset,
@@ -730,7 +731,7 @@ abstract class AbstractTextInput(
             getFontProvider().drawString(
                 matrixStack,
                 text,
-                if (active) selectionForegroundColor else inactiveSelectionForegroundColor,
+                if (editable) selectionForegroundColor else inactiveSelectionForegroundColor,
                 left - horizontalScrollingOffset,
                 getTop() + ((lineHeight * row + 1) * getTextScale()) + verticalScrollingOffset,
                 10f,

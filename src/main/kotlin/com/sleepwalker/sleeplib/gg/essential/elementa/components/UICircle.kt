@@ -27,11 +27,11 @@ class UICircle @JvmOverloads constructor(radius: Float = 0f, color: Color = Colo
     }
 
     override fun getLeft(): Float {
-        return constraints.getX() - getRadius()
+        return constraints.getXValue() - getRadius()
     }
 
     override fun getTop(): Float {
-        return constraints.getY() - getRadius()
+        return constraints.getYValue() - getRadius()
     }
 
     override fun getWidth(): Float {
@@ -49,8 +49,8 @@ class UICircle @JvmOverloads constructor(radius: Float = 0f, color: Color = Colo
     override fun draw(matrixStack: UMatrixStack) {
         beforeDraw(matrixStack)
 
-        val x = constraints.getX()
-        val y = constraints.getY()
+        val x = constraints.getXValue()
+        val y = constraints.getYValue()
         val r = getRadius()
 
         val color = getColor()
