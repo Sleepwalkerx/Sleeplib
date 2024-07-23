@@ -10,8 +10,8 @@ import com.sleepwalker.sleeplib.gg.essential.universal.UMatrixStack
 import java.awt.Color
 
 open class UIDrawable(
-    var drawable : Drawable
-) : UIComponent(), ImageProvider {
+    override var drawable : Drawable
+) : UIComponent(), ImageProvider, DrawableProvider {
 
     init {
         setWidth(drawable.width.pixel)

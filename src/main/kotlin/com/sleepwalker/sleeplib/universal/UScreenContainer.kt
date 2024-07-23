@@ -40,13 +40,13 @@ abstract class UScreenContainer<T : Container>(
     }
 
     final override fun keyPressed(keyCode: Int, scanCode: Int, modifierCode: Int): Boolean {
-        if(keyCode == GLFW.GLFW_KEY_ESCAPE && shouldCloseOnEsc()){
-            closeScreen()
-            return true
+        return if(super.keyPressed(keyCode, scanCode, modifierCode)){
+            true
         }
-
-        onKeyPressed(keyCode, 0.toChar(), modifierCode.toModifiers())
-        return false
+        else {
+            onKeyPressed(keyCode, 0.toChar(), modifierCode.toModifiers())
+            false
+        }
     }
 
     final override fun keyReleased(keyCode: Int, scanCode: Int, modifierCode: Int): Boolean {

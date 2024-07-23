@@ -25,6 +25,7 @@ class UIDropDown(
     private val titleButton: UIButton
     private val pointingTriangleIcon: UIPointingTriangleIcon
     private var expansion: UIContainer? = null
+    var expansionConstrainTo: UIComponent? = null
 
     init {
         var mainTitle: String? = valueMap[selectedValue]
@@ -57,7 +58,7 @@ class UIDropDown(
                 y = PixelConstraint(0f, alignOpposite = true, true).to(this@UIDropDown) as YConstraint
                 width = ChildBasedMaxSizeConstraint()
                 height = 0f.pixel
-            } childOf parent
+            } childOf (expansionConstrainTo ?: parent)
 
             expansion?.let {
                 it.enableEffect(ScissorEffect())
@@ -86,7 +87,7 @@ class UIDropDown(
                 it.makeAnimation()
                     .setHeightAnimation(Animations.OUT_QUART, 0.25f, PixelConstraint(0f))
                     .onCompleteRunnable {
-                        it.parent.removeChild(it)
+                        (expansionConstrainTo ?: it.parent).removeChild(it)
                         expansion = null
                     }
                     .begin()

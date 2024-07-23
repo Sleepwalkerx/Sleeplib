@@ -71,15 +71,20 @@ class SlideComponent(private val mode: Mode) : UIComponent() {
         slideListeners.add(listener)
     }
 
-    fun setSlider(component: UIComponent) = apply {
+    @JvmOverloads
+    fun setSlider(component: UIComponent, enableScroll: Boolean = true) = apply {
         slider.hide(true)
         slider = component
-        component.onMouseScroll {
-            recalculateBySlider(
-                if(mode.horizontal) it.delta.toFloat() else null,
-                if(mode.vertical) it.delta.toFloat() else null
-            )
+
+        if(enableScroll){
+            component.onMouseScroll {
+                recalculateBySlider(
+                    if(mode.horizontal) it.delta.toFloat() else null,
+                    if(mode.vertical) it.delta.toFloat() else null
+                )
+            }
         }
+
         component.onMouseDrag { mouseX, mouseY, _ ->
             recalculateBySlider(
                 if(!mode.horizontal) null else dragStartPosX?.let { mouseX - it },
@@ -143,14 +148,16 @@ class SlideComponent(private val mode: Mode) : UIComponent() {
             val min = slider.parent.getLeft()
             val max = slider.parent.getRight()
             val newPos = slider.getLeft() + it - min
-            xValue = MathHelper.clamp(newPos / (max - min - slider.getWidth()), 0f, 1f)
+            val value = max - min - slider.getWidth()
+            xValue = if(value == 0f) 0f else (newPos / value).coerceIn(0f, 1f)
         }
 
         dragDeltaY?.let {
             val min = slider.parent.getTop()
             val max = slider.parent.getBottom()
             val newPos = slider.getTop() + it - min
-            yValue = MathHelper.clamp(newPos / (max - min - slider.getHeight()), 0f, 1f)
+            val value = max - min - slider.getHeight()
+            yValue = if(value == 0f) 0f else (newPos / value).coerceIn(0f, 1f)
         }
 
         needsUpdate = true
