@@ -1,6 +1,6 @@
 package com.sleepwalker.sleeplib.elementa.components
 
-import com.sleepwalker.sleeplib.client.drawable.Drawable
+import com.sleepwalker.sleeplib.elementa.drawable.Drawable
 
 interface DrawableProvider {
 

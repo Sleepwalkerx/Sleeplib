@@ -1,11 +1,9 @@
 package com.sleepwalker.sleeplib.elementa.components
 
-import com.sleepwalker.sleeplib.client.drawable.Drawable
+import com.sleepwalker.sleeplib.elementa.drawable.Drawable
 import com.sleepwalker.sleeplib.gg.essential.elementa.UIComponent
 import com.sleepwalker.sleeplib.gg.essential.elementa.components.image.ImageProvider
 import com.sleepwalker.sleeplib.gg.essential.elementa.dsl.pixel
-import com.sleepwalker.sleeplib.gg.essential.elementa.state.BasicState
-import com.sleepwalker.sleeplib.gg.essential.elementa.state.State
 import com.sleepwalker.sleeplib.gg.essential.universal.UMatrixStack
 import java.awt.Color
 

@@ -1,7 +1,8 @@
 package com.sleepwalker.sleeplib.elementa.components
 
-import com.sleepwalker.sleeplib.client.SLSprites
-import com.sleepwalker.sleeplib.client.drawable.Drawable
+import com.sleepwalker.sleeplib.elementa.drawable.Drawable
+import com.sleepwalker.sleeplib.elementa.drawable.Drawables
+import com.sleepwalker.sleeplib.elementa.drawable.Shapes
 import com.sleepwalker.sleeplib.gg.essential.elementa.UIComponent
 import com.sleepwalker.sleeplib.gg.essential.elementa.components.UIContainer
 import com.sleepwalker.sleeplib.gg.essential.elementa.components.UIText
@@ -14,10 +15,13 @@ import com.sleepwalker.sleeplib.gg.essential.universal.USound
 import java.awt.Color
 import javax.annotation.Nonnull
 
-class UIDropDown(
-    private val valueMap: Map<Any, String>,
+
+class UIDropDown @JvmOverloads constructor(
+    private val valueMap: Map<out Any, String>,
     private var selectedValue: Any,
-    private val sprite: Drawable
+    private val buttonEnabled: Drawable,
+    private val buttonFocused: Drawable = Shapes.HOLLOW_BLOCK,
+    private val pointingTriangle: Drawable = Drawables.DOWN_POINTING_TRIANGLE
 ) : UIContainer() {
 
     private var valueSelectedListeners = mutableListOf<UIDropDown.() -> Unit>()
@@ -130,7 +134,7 @@ class UIDropDown(
         title: String,
         private var value: Any,
         private val selectable: Boolean
-    ) : UIDrawable(sprite) {
+    ) : UIDrawable(buttonEnabled) {
 
         private val title: UIText
 
@@ -138,30 +142,30 @@ class UIDropDown(
             constrain {
                 width = RelativeConstraint().to(this@UIDropDown) as WidthConstraint
                 height = RelativeConstraint().to(this@UIDropDown) as HeightConstraint
+                color = CopyConstraintColor().to(this@UIDropDown) as ColorConstraint
             }
-            setColor(CopyConstraintColor().to(this@UIDropDown) as ColorConstraint)
 
-            UIHollowBlock(Color(255, 255, 255, 0), 1f)
-                .setWidth(RelativeConstraint())
-                .setHeight(RelativeConstraint())
-                .onMouseEnter {
-                    this.makeAnimation()
-                        .setColorAnimation(
-                            Animations.OUT_QUART,
-                            0.225f,
-                            AlphaAspectColorConstraint(this.getColor(), 1f)
-                        )
-                        .begin()
-                }
-                .onMouseLeave {
-                    this.makeAnimation()
-                        .setColorAnimation(
-                            Animations.OUT_QUART,
-                            0.225f,
-                            AlphaAspectColorConstraint(this.getColor(), 0f)
-                        )
-                        .begin()
-                } childOf this
+            UIDrawable(buttonFocused).constrain {
+                width = 100.percent
+                height = 100.percent
+                color = Color(255, 255, 255, 0).toConstraint()
+            }.onMouseEnter {
+                this.makeAnimation()
+                    .setColorAnimation(
+                        Animations.OUT_QUART,
+                        0.225f,
+                        AlphaAspectColorConstraint(this.getColor(), 1f)
+                    )
+                    .begin()
+            }.onMouseLeave {
+                this.makeAnimation()
+                    .setColorAnimation(
+                        Animations.OUT_QUART,
+                        0.225f,
+                        AlphaAspectColorConstraint(this.getColor(), 0f)
+                    )
+                    .begin()
+            } childOf this
 
             this.title = UIText(title).constrain {
                 x = 4f.pixel
@@ -185,13 +189,13 @@ class UIDropDown(
         }
     }
 
-    inner class UIPointingTriangleIcon : UIDrawable(SLSprites.DOWN_POINTING_TRIANGLE) {
+    inner class UIPointingTriangleIcon : UIDrawable(pointingTriangle) {
 
         var angle = 0f
 
         init {
-            setWidth(SLSprites.DOWN_POINTING_TRIANGLE.width.pixel)
-            setHeight(SLSprites.DOWN_POINTING_TRIANGLE.height.pixel)
+            setWidth(pointingTriangle.width.pixel)
+            setHeight(pointingTriangle.height.pixel)
         }
 
         override fun draw(@Nonnull matrixStack: UMatrixStack) {

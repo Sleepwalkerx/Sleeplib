@@ -1,21 +1,24 @@
 package com.sleepwalker.sleeplib.elementa.components
 
-import com.sleepwalker.sleeplib.client.drawable.Drawable
-import com.sleepwalker.sleeplib.client.util.DrawUtil
+import com.sleepwalker.sleeplib.elementa.drawable.Drawable
+import com.sleepwalker.sleeplib.elementa.style.*
 import com.sleepwalker.sleeplib.gg.essential.elementa.UIComponent
-import com.sleepwalker.sleeplib.gg.essential.universal.UMatrixStack
 import com.sleepwalker.sleeplib.gg.essential.universal.USound
-import net.minecraft.item.ItemStack
 import javax.annotation.Nonnull
 
-class UIButton(
-    private val enabledDrawable: Drawable,
-    private val focusedDrawable: Drawable,
-    private val pressedDrawable: Drawable,
-    private val disabledDrawable: Drawable
+open class UIButton(
+    var enabledDrawable: Drawable,
+    var focusedDrawable: Drawable,
+    var pressedDrawable: Drawable,
+    var disabledDrawable: Drawable
 ) : UIDrawable(enabledDrawable) {
 
-    constructor(style: Styles.Button) : this(style.enabled, style.focused, style.pressed, style.disabled)
+    constructor(style: Style) : this(
+        style.getValueOrThrow(ENABLED),
+        style.getValueOrThrow(FOCUSED),
+        style.getValueOrThrow(PRESSED),
+        style.getValueOrThrow(DISABLED)
+    )
 
     private var clickSound: UIComponent.() -> Unit = { USound.playButtonPress() }
     private var focused: Boolean = false
@@ -50,6 +53,13 @@ class UIButton(
             }
             updateSprite()
         }
+    }
+
+    fun setStyle(style: Style) = apply {
+        enabledDrawable = style.getValueOrThrow(ENABLED)
+        focusedDrawable = style.getValueOrThrow(FOCUSED)
+        pressedDrawable = style.getValueOrThrow(PRESSED)
+        disabledDrawable = style.getValueOrThrow(DISABLED)
     }
 
     fun setClickSound(clickSound: UIComponent.() -> Unit) = apply {

@@ -20,7 +20,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
 
-class  UIItemStack  @JvmOverloads constructor(
+open class UIItemStack  @JvmOverloads constructor(
     var itemStack: ItemStack,
     val padding: Float = 0f
 ) : UIComponent() {

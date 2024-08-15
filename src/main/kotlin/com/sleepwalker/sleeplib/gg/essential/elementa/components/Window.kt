@@ -1,5 +1,6 @@
 package com.sleepwalker.sleeplib.gg.essential.elementa.components
 
+import com.sleepwalker.sleeplib.elementa.components.ComponentDrawable
 import com.sleepwalker.sleeplib.gg.essential.elementa.ElementaVersion
 import com.sleepwalker.sleeplib.gg.essential.elementa.UIComponent
 import com.sleepwalker.sleeplib.gg.essential.elementa.constraints.resolution.ConstraintResolutionGui
@@ -38,6 +39,9 @@ class Window @JvmOverloads constructor(
     private var cancelDrawing = false
 
     internal var clickInterceptor: ((mouseX: Double, mouseY: Double, button: Int) -> Boolean)? = null
+
+    /* DEV */
+    var tooltip: ComponentDrawable? = null
 
     @Deprecated("Add ElementaVersion as the first argument to opt-in to improved behavior.")
     @JvmOverloads

@@ -58,6 +58,11 @@ abstract class WindowScreen @JvmOverloads constructor(
         // needs to do is call the [Window] events when appropriate, whenever that may be.
         // In our example, it is in the overridden [GuiScreen#drawScreen] method.
         window.draw(matrixStack)
+
+        if(window.tooltip != null){
+            window.tooltip!!.draw(matrixStack, mouseX, mouseY, partialTicks)
+            window.tooltip = null
+        }
     }
 
     override fun onMouseClicked(mouseX: Double, mouseY: Double, mouseButton: Int) {

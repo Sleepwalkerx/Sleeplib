@@ -1,7 +1,7 @@
 package com.sleepwalker.sleeplib.elementa.components
 
+import com.sleepwalker.sleeplib.elementa.drawable.Shape
 import com.sleepwalker.sleeplib.elementa.events.UIColorPickEvent
-import com.sleepwalker.sleeplib.client.drawable.Shape
 import com.sleepwalker.sleeplib.gg.essential.elementa.UIComponent
 import com.sleepwalker.sleeplib.gg.essential.elementa.components.UIBlock
 import com.sleepwalker.sleeplib.gg.essential.elementa.components.UIContainer
@@ -10,7 +10,11 @@ import com.sleepwalker.sleeplib.gg.essential.elementa.dsl.*
 import com.sleepwalker.sleeplib.gg.essential.elementa.state.BasicState
 import com.sleepwalker.sleeplib.gg.essential.elementa.state.toConstraint
 import com.sleepwalker.sleeplib.gg.essential.universal.UGraphics
-import com.sleepwalker.sleeplib.util.ColorUtil
+import com.sleepwalker.sleeplib.gg.essential.universal.UMatrixStack
+import com.sleepwalker.sleeplib.util.HSVtoRGB
+import com.sleepwalker.sleeplib.util.RGBtoHSV
+import com.sleepwalker.sleeplib.util.fromHSV
+import com.sleepwalker.sleeplib.util.toHSV
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -148,10 +152,7 @@ class UIColorPicker : UIContainer() {
     }
 
     fun setColorPick(color: Color) {
-        val array = ColorUtil.RGBtoHSV(color.red / 255f, color.green / 255f, color.blue / 255f)
-        hue = array[0]
-        saturation = array[1]
-        lightness = array[2]
+        val (hue, saturation, lightness) = color.toHSV()
         slPicker.xValue = saturation
         slPicker.yValue = 1f - lightness
         slPicker.forceUpdate()
@@ -161,8 +162,8 @@ class UIColorPicker : UIContainer() {
     }
 
     private fun updateColor(){
-        colorState.set(ColorUtil.HSVtoRGB(hue, saturation, lightness).let { Color(it[0], it[1], it[2]) })
-        hueColorState.set(ColorUtil.HSVtoRGB(hue, 1f, 1f).let { Color(it[0], it[1], it[2]) })
+        colorState.set(Triple(hue, saturation, lightness).fromHSV())
+        hueColorState.set(Triple(hue, 1f, 1f).fromHSV())
 
         val event = UIColorPickEvent(colorState.get())
         for(listener in colorPickListeners){
@@ -172,61 +173,72 @@ class UIColorPicker : UIContainer() {
 
     companion object {
 
-        val COLOR_SLIDER = Shape { matrixStack, x, top, width, height, color ->
-            UGraphics.enableBlend()
-            UGraphics.disableAlpha()
-            UGraphics.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-            UGraphics.shadeModel(GL11.GL_SMOOTH)
+        val COLOR_SLIDER = object : Shape {
+            override fun drawImage(matrixStack: UMatrixStack, x: Double, top: Double, width: Double, height: Double, color: Color) {
+                UGraphics.enableBlend()
+                UGraphics.disableAlpha()
+                UGraphics.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
+                UGraphics.shadeModel(GL11.GL_SMOOTH)
 
-            val buffer = UGraphics.getFromTessellator()
-            val bottom: Double = top + height
-            val step = 6
-            val wStep = width / step
-            var left = x
-            var right: Double = left + wStep
-            val alpha = color.alpha / 255f
-            for (i in 0 until step) {
-                val color1 = ColorUtil.HSVtoRGB(i.toFloat() / step, 1f, 1f)
-                val color2 = ColorUtil.HSVtoRGB((i + 1f) / step, 1f, 1f)
-                buffer.beginWithDefaultShader(UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats.POSITION_COLOR)
-                buffer.pos(matrixStack, right, top, 0.0).color(color2[0], color2[1], color2[2], alpha).endVertex()
-                buffer.pos(matrixStack, left, top, 0.0).color(color1[0], color1[1], color1[2], alpha).endVertex()
-                buffer.pos(matrixStack, left, bottom, 0.0).color(color1[0], color1[1], color1[2], alpha).endVertex()
-                buffer.pos(matrixStack, right, bottom, 0.0).color(color2[0], color2[1], color2[2], alpha).endVertex()
-                buffer.drawDirect()
-                left += wStep
-                right += wStep
+                val buffer = UGraphics.getFromTessellator()
+                val bottom: Double = top + height
+                val step = 6
+                val wStep = width / step
+                var left = x
+                var right: Double = left + wStep
+                val alpha = color.alpha / 255f
+                for (i in 0 until step) {
+                    val (r1, g1, b1) = HSVtoRGB(i.toFloat() / step, 1f, 1f)
+                    val (r2, g2, b2) = HSVtoRGB((i + 1f) / step, 1f, 1f)
+                    buffer.beginWithDefaultShader(UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats.POSITION_COLOR)
+                    buffer.pos(matrixStack, right, top, 0.0).color(r2, g2, b2, alpha).endVertex()
+                    buffer.pos(matrixStack, left, top, 0.0).color(r1, g1, b1, alpha).endVertex()
+                    buffer.pos(matrixStack, left, bottom, 0.0).color(r1, g1, b1, alpha).endVertex()
+                    buffer.pos(matrixStack, right, bottom, 0.0).color(r2, g2, b2, alpha).endVertex()
+                    buffer.drawDirect()
+                    left += wStep
+                    right += wStep
+                }
+
+                UGraphics.shadeModel(GL11.GL_FLAT)
+                UGraphics.disableBlend()
+                UGraphics.enableAlpha()
             }
-
-            UGraphics.shadeModel(GL11.GL_FLAT)
-            UGraphics.disableBlend()
-            UGraphics.enableAlpha()
         }
 
-        val COLOR_RECT = Shape { matrixStack, left, top, width, height, color ->
-            UGraphics.enableBlend()
-            UGraphics.disableAlpha()
-            UGraphics.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-            UGraphics.shadeModel(GL11.GL_SMOOTH)
+        val COLOR_RECT = object : Shape {
+            override fun drawImage(
+                matrixStack: UMatrixStack,
+                left: Double,
+                top: Double,
+                width: Double,
+                height: Double,
+                color: Color
+            ) {
+                UGraphics.enableBlend()
+                UGraphics.disableAlpha()
+                UGraphics.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
+                UGraphics.shadeModel(GL11.GL_SMOOTH)
 
-            val right: Double = left + width
-            val bottom: Double = top + height
-            val red = color.red / 255f
-            val green = color.green / 255f
-            val blue = color.blue / 255f
-            val alpha = color.alpha / 255f
+                val right: Double = left + width
+                val bottom: Double = top + height
+                val red = color.red / 255f
+                val green = color.green / 255f
+                val blue = color.blue / 255f
+                val alpha = color.alpha / 255f
 
-            val buffer = UGraphics.getFromTessellator()
-            buffer.beginWithDefaultShader(UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats.POSITION_COLOR)
-            buffer.pos(matrixStack, right, top, 0.0).color(red, green, blue, 1f).endVertex()
-            buffer.pos(matrixStack, left, top, 0.0).color(1f, 1f, 1f, alpha).endVertex()
-            buffer.pos(matrixStack, left, bottom, 0.0).color(0f, 0f, 0f, alpha).endVertex()
-            buffer.pos(matrixStack, right, bottom, 0.0).color(0f, 0f, 0f, alpha).endVertex()
-            buffer.drawDirect()
+                val buffer = UGraphics.getFromTessellator()
+                buffer.beginWithDefaultShader(UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats.POSITION_COLOR)
+                buffer.pos(matrixStack, right, top, 0.0).color(red, green, blue, 1f).endVertex()
+                buffer.pos(matrixStack, left, top, 0.0).color(1f, 1f, 1f, alpha).endVertex()
+                buffer.pos(matrixStack, left, bottom, 0.0).color(0f, 0f, 0f, alpha).endVertex()
+                buffer.pos(matrixStack, right, bottom, 0.0).color(0f, 0f, 0f, alpha).endVertex()
+                buffer.drawDirect()
 
-            UGraphics.shadeModel(GL11.GL_FLAT)
-            UGraphics.disableBlend()
-            UGraphics.enableAlpha()
+                UGraphics.shadeModel(GL11.GL_FLAT)
+                UGraphics.disableBlend()
+                UGraphics.enableAlpha()
+            }
         }
     }
 }
