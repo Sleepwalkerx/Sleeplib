@@ -1,6 +1,7 @@
 package com.sleepwalker.sleeplib.util.network
 
 import net.minecraft.entity.player.ServerPlayerEntity
+import net.minecraft.network.PacketBuffer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -20,19 +21,19 @@ open class SimplePacketManager(val channel: SimpleChannel) {
 
     protected var nextMsgId = 0
 
-    private fun <P : INetworkPacket> rg(decoder: IPacketDecoder<P>, type: Class<P>, direction: NetworkDirection) {
+    private fun <P : INetworkPacket> rg(decoder: (PacketBuffer) -> P, type: Class<P>, direction: NetworkDirection) {
         channel.registerMessage(nextMsgId++, type,
             { packet, buffer -> packet.write(buffer) },
-            { buffer -> decoder.decode(buffer) },
+            { buffer -> decoder(buffer) },
             { packet, contextSupplier -> this.handlePacket(packet, contextSupplier) },
             Optional.of(direction)
         )
     }
 
-    fun <P : IClientPacket> rgCP(decoder: IPacketDecoder<P>, type: Class<P>) = rg(decoder, type, NetworkDirection.PLAY_TO_SERVER)
-    inline fun <reified P : IClientPacket> rgCP(decoder: IPacketDecoder<P>) = rgCP(decoder, P::class.java)
-    fun <P : IServerPacket> rgSP(decoder: IPacketDecoder<P>, type: Class<P>) = rg(decoder, type, NetworkDirection.PLAY_TO_CLIENT)
-    inline fun <reified P : IServerPacket> rgSP(decoder: IPacketDecoder<P>) = rgSP(decoder, P::class.java)
+    fun <P : IClientPacket> rgCP(decoder: (PacketBuffer) -> P, type: Class<P>) = rg(decoder, type, NetworkDirection.PLAY_TO_SERVER)
+    inline fun <reified P : IClientPacket> rgCP(noinline decoder: (PacketBuffer) -> P) = rgCP(decoder, P::class.java)
+    fun <P : IServerPacket> rgSP(decoder: (PacketBuffer) -> P, type: Class<P>) = rg(decoder, type, NetworkDirection.PLAY_TO_CLIENT)
+    inline fun <reified P : IServerPacket> rgSP(noinline decoder: (PacketBuffer) -> P) = rgSP(decoder, P::class.java)
 
     protected fun <P : INetworkPacket> handlePacket(packet: P, contextSupplier: Supplier<NetworkEvent.Context>) {
         val context = contextSupplier.get()

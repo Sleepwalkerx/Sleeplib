@@ -20,7 +20,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
 
-open class UIItemStack  @JvmOverloads constructor(
+open class UIItemStack @JvmOverloads constructor(
     var itemStack: ItemStack,
     val padding: Float = 0f
 ) : UIComponent() {
@@ -96,54 +96,59 @@ open class UIItemStack  @JvmOverloads constructor(
         val y = this.getTop() + padding
         val width = this.getWidth() - padding * 2
         val height = this.getHeight() - padding * 2
-
-        val ir = Minecraft.getInstance().itemRenderer
-        val tm = Minecraft.getInstance().getTextureManager()
-        val model: IBakedModel = ir.getItemModelWithOverrides(itemStack, null, null)
-        matrixStack.push()
-
-        //TODO: временное решение бага с рендером предметов
-        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false)
-        matrixStack.translate(0f, 0f, -100f)
-
-        tm.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
-        tm.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)?.setBlurMipmapDirect(false, false)
-        RenderSystem.enableRescaleNormal()
-        RenderSystem.enableAlphaTest()
-        RenderSystem.defaultAlphaFunc()
-        RenderSystem.enableBlend()
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f)
-        matrixStack.translate(x, y, 0f)
-        matrixStack.translate(width / 2f, height / 2f, 0f)
-        matrixStack.scale(1.0f, -1.0f, 1.0f)
-        matrixStack.scale(width, height, 1f)
-        val buffer: IRenderTypeBuffer.Impl = Minecraft.getInstance().renderTypeBuffers.bufferSource
-        val isSileLit: Boolean = !model.isSideLit
-        if (isSileLit) {
-            RenderHelper.setupGuiFlatDiffuseLighting()
-        }
-
-        ir.renderItem(
-            itemStack,
-            ItemCameraTransforms.TransformType.GUI,
-            false,
-            matrixStack.toMC(),
-            buffer,
-            15728880,
-            OverlayTexture.NO_OVERLAY,
-            model
-        )
-        buffer.finish()
-        RenderSystem.enableDepthTest()
-        if (isSileLit) {
-            RenderHelper.setupGui3DDiffuseLighting()
-        }
-
-        RenderSystem.disableAlphaTest()
-        RenderSystem.disableRescaleNormal()
-        matrixStack.pop()
+        drawItemStack(matrixStack, x, y, width, height, itemStack)
 
         super.draw(matrixStack)
+    }
+
+    companion object {
+        fun drawItemStack(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, itemStack: ItemStack){
+            val ir = Minecraft.getInstance().itemRenderer
+            val tm = Minecraft.getInstance().getTextureManager()
+            val model: IBakedModel = ir.getItemModelWithOverrides(itemStack, null, null)
+            matrixStack.push()
+
+            //TODO: временное решение бага с рендером предметов
+            RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, false)
+            matrixStack.translate(0f, 0f, -100f)
+
+            tm.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+            tm.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)?.setBlurMipmapDirect(false, false)
+            RenderSystem.enableRescaleNormal()
+            RenderSystem.enableAlphaTest()
+            RenderSystem.defaultAlphaFunc()
+            RenderSystem.enableBlend()
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f)
+            matrixStack.translate(x, y, 0f)
+            matrixStack.translate(width / 2f, height / 2f, 0f)
+            matrixStack.scale(1.0f, -1.0f, 1.0f)
+            matrixStack.scale(width, height, 1f)
+            val buffer: IRenderTypeBuffer.Impl = Minecraft.getInstance().renderTypeBuffers.bufferSource
+            val isSileLit: Boolean = !model.isSideLit
+            if (isSileLit) {
+                RenderHelper.setupGuiFlatDiffuseLighting()
+            }
+
+            ir.renderItem(
+                itemStack,
+                ItemCameraTransforms.TransformType.GUI,
+                false,
+                matrixStack.toMC(),
+                buffer,
+                15728880,
+                OverlayTexture.NO_OVERLAY,
+                model
+            )
+            buffer.finish()
+            RenderSystem.enableDepthTest()
+            if (isSileLit) {
+                RenderHelper.setupGui3DDiffuseLighting()
+            }
+
+            RenderSystem.disableAlphaTest()
+            RenderSystem.disableRescaleNormal()
+            matrixStack.pop()
+        }
     }
 }

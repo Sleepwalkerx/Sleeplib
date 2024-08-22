@@ -12,8 +12,6 @@ class NineSliceSprite(
             this(texture, uOffset, vOffset, uWidth, vHeight, border, border, border, border)
 
     override fun drawImage(matrixStack: UMatrixStack, x: Double, y: Double, width: Double, height: Double, color: Color) {
-        super.drawImage(matrixStack, x, y, width, height, color)
-
         texture.bind()
         val fillerWidth = uWidth - left - right
         val fillerHeight = vHeight - top - bottom

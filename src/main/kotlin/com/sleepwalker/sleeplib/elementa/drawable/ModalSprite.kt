@@ -13,7 +13,8 @@ open class ModalSprite(
     val vHeight: Int
 ) : Drawable {
 
-    constructor(texture: TextureSource, uOffset: Int, vOffset: Int) : this(texture, uOffset, vOffset, texture.width, texture.height)
+    constructor(texture: TextureSource, uWidth: Int, vHeight: Int) : this(texture, 0, 0, uWidth, vHeight)
+    constructor(texture: TextureSource) : this(texture, texture.width, texture.height)
 
     override val width: Int
         get() = uWidth
