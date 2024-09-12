@@ -3,7 +3,8 @@ package com.sleepwalker.sleeplib.elementa.components
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.IVertexBuilder
-import com.sleepwalker.architectsdream.world.FakeWorldInstance
+import com.sleepwalker.sleeplib.world.FakeWorldInstance
+import com.sleepwalker.sleeplib.elementa.effect.BlockTooltipEffect
 import com.sleepwalker.sleeplib.gg.essential.elementa.UIComponent
 import com.sleepwalker.sleeplib.gg.essential.elementa.components.UIText
 import com.sleepwalker.sleeplib.gg.essential.elementa.constraints.PixelConstraint
