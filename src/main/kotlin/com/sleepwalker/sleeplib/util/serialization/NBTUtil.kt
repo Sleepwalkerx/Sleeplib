@@ -10,11 +10,12 @@ import java.awt.Color
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
+import kotlin.collections.Collection
 
 fun <T : Enum<T>> CompoundNBT.getEnum(name: String, def: T): T {
-    if(this.contains(name, Constants.NBT.TAG_STRING)){
+    if(contains(name, Constants.NBT.TAG_STRING)){
         try {
-            return java.lang.Enum.valueOf(def.declaringJavaClass, def.name);
+            return java.lang.Enum.valueOf(def.declaringJavaClass, getString(name))
         }
         catch (ignore: IllegalArgumentException){
         }
@@ -23,17 +24,17 @@ fun <T : Enum<T>> CompoundNBT.getEnum(name: String, def: T): T {
 }
 
 fun <T : Enum<T>> CompoundNBT.putEnum(name: String, value: T) {
-    this.putString(name, value.name)
+    putString(name, value.name)
 }
 
 fun <T : IForgeRegistryEntry<T>> CompoundNBT.putRegistryEntry(name: String, value: T) {
-    this.putString(name, Objects.requireNonNull(value.registryName).toString())
+    putString(name, Objects.requireNonNull(value.registryName).toString())
 }
 
 
 fun <T : IForgeRegistryEntry<T>> CompoundNBT.getRegistryEntry(name: String, registry: IForgeRegistry<T>, defKey: ResourceLocation?): T? {
-    if (this.contains(name, Constants.NBT.TAG_STRING)) {
-        val loc = ResourceLocation.tryCreate(this.getString(name))
+    if (contains(name, Constants.NBT.TAG_STRING)) {
+        val loc = ResourceLocation.tryCreate(getString(name))
         if (loc != null) {
             val type = registry.getValue(loc)
             if (type != null) {
@@ -136,31 +137,38 @@ fun CompoundNBT.getColor(name: String): Color? {
 }
 
 fun CompoundNBT.putBlockPos(name: String, value: BlockPos) {
-    this.putIntArray(name, intArrayOf(value.x, value.y, value.z))
+    putLong(name, value.toLong())
 }
 
-fun CompoundNBT.getBlockPos(name: String, blockPos: BlockPos?): BlockPos? {
-    if (this.contains(name)) {
-        val list = this[name]
-        if (list is ListNBT) {
-            if (list.size == 3) {
-                return BlockPos(list.getInt(0), list.getInt(1), list.getInt(2))
-            }
-        } else if (list is IntArrayNBT) {
-            val array = this.getIntArray(name)
-            if (array.size == 3) {
-                return BlockPos(array[0], array[1], array[2])
-            }
-        } else if (list is LongArrayNBT) {
-            val array = this.getLongArray(name)
-            if (array.size == 3) {
-                return BlockPos(array[0].toDouble(), array[1].toDouble(), array[2].toDouble())
-            }
-        }
+fun CompoundNBT.getBlockPosList(name: String): List<BlockPos> {
+    val positions = mutableListOf<BlockPos>()
+    val list = getList(name, Constants.NBT.TAG_LONG)
+    for (i in list.indices){
+        positions.add(list.getBlockPos(i))
     }
-    return blockPos
+    return positions
 }
 
-fun CompoundNBT.getBlockPos(name: String): BlockPos? {
-    return this.getBlockPos(name, null)
+fun CompoundNBT.putBlockPosCollection(name: String, positions: Collection<BlockPos>) {
+    val list = ListNBT()
+    for (pos in positions){
+        list.addBlockPos(pos)
+    }
+    put(name, list)
+}
+
+fun ListNBT.addBlockPos(value: BlockPos){
+    add(LongNBT.valueOf(value.toLong()))
+}
+
+fun ListNBT.getBlockPos(index: Int): BlockPos {
+    return BlockPos.fromLong((get(index) as LongNBT).long)
+}
+
+fun CompoundNBT.getBlockPosOr(name: String, blockPos: BlockPos): BlockPos {
+    return if(contains(name)) BlockPos.fromLong(getLong(name)) else blockPos
+}
+
+fun CompoundNBT.getBlockPosOrNull(name: String): BlockPos? {
+    return if(contains(name)) BlockPos.fromLong(getLong(name)) else null
 }

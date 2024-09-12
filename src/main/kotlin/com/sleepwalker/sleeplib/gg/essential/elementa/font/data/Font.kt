@@ -5,15 +5,18 @@ import com.sleepwalker.sleeplib.gg.essential.universal.utils.ReleasedDynamicText
 import com.google.gson.JsonParser
 import java.io.InputStream
 
-class Font(
+class Font @JvmOverloads constructor(
     val fontInfo: FontInfo,
-    private val atlas: InputStream
+    private val atlas: InputStream,
+    val blur: Boolean = false,
+    val mipmap: Boolean = false
 ) {
     private lateinit var texture: ReleasedDynamicTexture
 
     fun getTexture(): ReleasedDynamicTexture {
         if (!::texture.isInitialized) {
             texture = UGraphics.getTexture(atlas)
+            texture.setBlurMipmap(blur, mipmap)
         }
 
         return texture

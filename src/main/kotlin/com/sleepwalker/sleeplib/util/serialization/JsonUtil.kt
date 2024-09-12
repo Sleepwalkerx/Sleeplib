@@ -17,7 +17,10 @@ import java.awt.Color
 import java.io.*
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.nio.channels.Channels
+import java.nio.channels.FileChannel
 import java.nio.charset.StandardCharsets
+import java.nio.file.StandardOpenOption
 import java.util.*
 import javax.annotation.Nonnull
 
@@ -26,8 +29,16 @@ val GSON_WITHOUT_PRETTY: Gson = GsonBuilder().disableHtmlEscaping().create()
 
 @Throws(IOException::class)
 fun toJson(gson: Gson, jsonObject: JsonObject, file: File) {
-    FileOutputStream(file).use { fileOutputStream ->
+    /*FileOutputStream(file).use { fileOutputStream ->
         OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8).use { writer ->
+            JsonWriter(writer).use { jsonWriter ->
+                jsonWriter.setIndent("    ")
+                gson.toJson(jsonObject, jsonWriter)
+            }
+        }
+    }*/
+    FileChannel.open(file.toPath(), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING).use { channel ->
+        OutputStreamWriter(Channels.newOutputStream(channel), StandardCharsets.UTF_8).use { writer ->
             JsonWriter(writer).use { jsonWriter ->
                 jsonWriter.setIndent("    ")
                 gson.toJson(jsonObject, jsonWriter)

@@ -6,9 +6,9 @@ import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraftforge.server.permission.PermissionAPI
 
 fun <S : CommandSource, T : ArgumentBuilder<S, T>> T.requiresNode(node: String): T = this.requires {
-    when(it.entity){
+    when(val entity = it.entity){
         null -> true
-        is ServerPlayerEntity -> PermissionAPI.hasPermission(it.entity as ServerPlayerEntity, node)
+        is ServerPlayerEntity -> PermissionAPI.hasPermission(entity, node)
         else -> false
     }
 }

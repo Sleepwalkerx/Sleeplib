@@ -9,12 +9,7 @@ import com.sleepwalker.sleeplib.gg.essential.elementa.utils.readFromLegacyShader
 import com.sleepwalker.sleeplib.gg.essential.universal.UGraphics
 import com.sleepwalker.sleeplib.gg.essential.universal.UMatrixStack
 import com.sleepwalker.sleeplib.gg.essential.universal.UResolution
-import com.sleepwalker.sleeplib.gg.essential.universal.shader.BlendState
-import com.sleepwalker.sleeplib.gg.essential.universal.shader.Float2Uniform
-import com.sleepwalker.sleeplib.gg.essential.universal.shader.Float4Uniform
-import com.sleepwalker.sleeplib.gg.essential.universal.shader.FloatUniform
-import com.sleepwalker.sleeplib.gg.essential.universal.shader.SamplerUniform
-import com.sleepwalker.sleeplib.gg.essential.universal.shader.UShader
+import com.sleepwalker.sleeplib.gg.essential.universal.shader.*
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.ceil
@@ -112,6 +107,7 @@ class FontRenderer(
 
         if (activeFont != tmp) { //Font context switch
             UGraphics.configureTexture(activeFont.getTexture().dynamicGlId) {
+                GL11.GL_LINEAR_MIPMAP_LINEAR
                 GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
                 GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
             }

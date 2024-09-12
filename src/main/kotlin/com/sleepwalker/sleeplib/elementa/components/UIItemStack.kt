@@ -92,10 +92,13 @@ open class UIItemStack @JvmOverloads constructor(
             return super.draw(matrixStack)
         }
 
-        val x = this.getLeft() + padding
-        val y = this.getTop() + padding
-        val width = this.getWidth() - padding * 2
-        val height = this.getHeight() - padding * 2
+        val scale = color.alpha / 255f
+        val oWidth = this.getWidth() - padding * 2
+        val oHeight = this.getHeight() - padding * 2
+        val width = oWidth * scale
+        val height = oHeight * scale
+        val x = (this.getLeft() + padding) + (oWidth * (1f - scale) * 0.5f)
+        val y = (this.getTop() + padding) + (oHeight * (1f - scale) * 0.5f)
         drawItemStack(matrixStack, x, y, width, height, itemStack)
 
         super.draw(matrixStack)

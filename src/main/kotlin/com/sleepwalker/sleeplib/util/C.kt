@@ -1,9 +1,8 @@
 package com.sleepwalker.sleeplib.util
 
-import com.sleepwalker.sleeplib.SleepLib
+import com.sleepwalker.sleeplib.translations.SleepLibTranslations
 import net.minecraft.util.IReorderingProcessor
 import net.minecraft.util.text.*
-import javax.annotation.Nonnull
 
 object C {
 
@@ -26,6 +25,6 @@ object C {
         override fun func_241878_f(): IReorderingProcessor = IReorderingProcessor.field_242232_a
     }
 
-    private fun response(path: String, error: Boolean): ITextComponent = TranslationTextComponent("response.${SleepLib.MODID}.$path")
+    private fun response(key: String, error: Boolean): ITextComponent = SleepLibTranslations.response(key)
         .mergeStyle(if(error) TextFormatting.RED else TextFormatting.YELLOW)
 }

@@ -11,7 +11,13 @@ open class TooltipEffect @JvmOverloads constructor(
     private val maxTextWidth: Int = -1
 ) : BaseTooltipEffect() {
 
-    constructor(vararg lines: String, maxTextWidth: Int = -1) : this(lines.map { StringTextComponent(it) }, maxTextWidth)
+    @JvmOverloads
+    constructor(vararg lines: ITextProperties, maxTextWidth: Int = -1) : this(lines.map { it }, maxTextWidth)
+    @JvmOverloads
+    constructor(vararg lines: String, maxTextWidth: Int = -1) : this(
+        lines.map { StringTextComponent(it) },
+        maxTextWidth
+    )
 
     override fun draw(matrixStack: UMatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         val window = Minecraft.getInstance().mainWindow
@@ -26,16 +32,5 @@ open class TooltipEffect @JvmOverloads constructor(
             maxTextWidth,
             Minecraft.getInstance().fontRenderer
         )
-    }
-
-    companion object {
-
-        @JvmOverloads fun ofStringList(lines: List<String>, maxTextWidth: Int = -1): TooltipEffect {
-            return TooltipEffect(lines.map { StringTextComponent(it) }, maxTextWidth)
-        }
-
-        @JvmOverloads fun ofVararg(maxTextWidth: Int = -1, vararg lines: String): TooltipEffect {
-            return TooltipEffect(lines.map { StringTextComponent(it) }, maxTextWidth)
-        }
     }
 }

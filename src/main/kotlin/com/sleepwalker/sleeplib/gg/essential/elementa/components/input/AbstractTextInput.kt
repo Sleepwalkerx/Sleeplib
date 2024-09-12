@@ -373,6 +373,18 @@ abstract class AbstractTextInput(
         commitTextOperation(replaceTextOperation)
     }
 
+    /* == DEV == */
+    fun scrollIntoStart(){
+        targetVerticalScrollingOffset = 0f
+        verticalScrollingOffset = 0f
+        scrollIntoView(LinePosition(0, 0, true))
+        cursorNeedsRefocus = false
+    }
+    fun calculateHeight(){
+        setHeight((lineHeight * textualLines.size).pixel)
+    }
+    /* == DEV == */
+
     protected abstract fun scrollIntoView(pos: LinePosition)
     protected abstract fun screenPosToVisualPos(x: Float, y: Float): LinePosition
     protected abstract fun recalculateDimensions()
