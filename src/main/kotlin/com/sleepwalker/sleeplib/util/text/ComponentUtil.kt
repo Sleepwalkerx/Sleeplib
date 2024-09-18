@@ -1,9 +1,9 @@
-package com.sleepwalker.sleeplib.util
+package com.sleepwalker.sleeplib.util.text
 
-import net.minecraft.util.text.ITextComponent
-import net.minecraft.util.text.Style
-import net.minecraft.util.text.TextFormatting
+import net.minecraft.util.text.*
 import java.util.Optional
+
+fun String.literal(): IFormattableTextComponent = StringTextComponent(this)
 
 fun ITextComponent.getStringWithFormatting(): String {
     val builder = StringBuilder()

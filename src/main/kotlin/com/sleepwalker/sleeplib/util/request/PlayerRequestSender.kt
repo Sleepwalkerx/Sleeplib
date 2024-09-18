@@ -20,12 +20,15 @@ class PlayerRequestSender(val profile: GameProfile) : IRequestSender {
 
     override fun hasPermission(node: String): Boolean = PermissionAPI.hasPermission(profile, node, null)
 
-    fun getPlayer(): ServerPlayerEntity? = ServerLifecycleHooks.getCurrentServer()?.playerList?.getPlayerByUUID(profile.id)
+    val player: ServerPlayerEntity?
+        get() = ServerLifecycleHooks.getCurrentServer()?.playerList?.getPlayerByUUID(profile.id)
 
     override fun sendMessage(message: ITextComponent, notifyAdmins: Boolean) {
-        getPlayer()?.sendMessage(message, Util.DUMMY_UUID)
+        player?.sendMessage(message, Util.DUMMY_UUID)
         if (notifyAdmins) {
             broadcastToAdmins(this, message)
         }
     }
 }
+
+fun ServerPlayerEntity.toRequestSender(): PlayerRequestSender = PlayerRequestSender(this)

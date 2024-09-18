@@ -14,7 +14,7 @@ import com.sleepwalker.sleeplib.gg.essential.universal.UMatrixStack
 import com.sleepwalker.sleeplib.integration.IntegrationHelper
 import com.sleepwalker.sleeplib.integration.jei.SleepLibJeiPlugin
 import com.sleepwalker.sleeplib.translations.SleepLibTranslations
-import com.sleepwalker.sleeplib.util.getStringWithFormatting
+import com.sleepwalker.sleeplib.util.text.getStringWithFormatting
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks
