@@ -4,6 +4,7 @@ import net.minecraft.util.text.*
 import java.util.Optional
 
 fun String.literal(): IFormattableTextComponent = StringTextComponent(this)
+fun String.literal(formatting: TextFormatting): IFormattableTextComponent = StringTextComponent(this).mergeStyle(formatting)
 
 fun ITextComponent.getStringWithFormatting(): String {
     val builder = StringBuilder()

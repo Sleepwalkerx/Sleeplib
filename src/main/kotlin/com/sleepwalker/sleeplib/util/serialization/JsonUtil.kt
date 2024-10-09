@@ -202,9 +202,9 @@ fun <T : IForgeRegistryEntry<T>> JsonObject.getRegistryEntryOrCreate(name: Strin
     return this.getRegistryEntryOrCreate(name, registry())
 }
 
-fun getIntOrCreate(jsonObject: JsonObject, name: String?, def: Int): Int {
-    if (jsonObject.has(name)) {
-        val element = jsonObject[name]
+fun JsonObject.getIntOrCreate(name: String, def: Int): Int {
+    if (has(name)) {
+        val element = this[name]
         if (element.isJsonPrimitive) {
             val primitive = element.getAsJsonPrimitive()
             if (primitive.isNumber) {
@@ -212,13 +212,13 @@ fun getIntOrCreate(jsonObject: JsonObject, name: String?, def: Int): Int {
             }
         }
     }
-    jsonObject.addProperty(name, def)
+    addProperty(name, def)
     return def
 }
 
-fun getLongOrCreate(jsonObject: JsonObject, name: String?, def: Long): Long {
-    if (jsonObject.has(name)) {
-        val element = jsonObject[name]
+fun JsonObject.getLongOrCreate(name: String, def: Long): Long {
+    if (has(name)) {
+        val element = this[name]
         if (element.isJsonPrimitive) {
             val primitive = element.getAsJsonPrimitive()
             if (primitive.isNumber) {
@@ -226,13 +226,13 @@ fun getLongOrCreate(jsonObject: JsonObject, name: String?, def: Long): Long {
             }
         }
     }
-    jsonObject.addProperty(name, def)
+    addProperty(name, def)
     return def
 }
 
-fun getFloatOrCreate(jsonObject: JsonObject, name: String?, def: Float): Float {
-    if (jsonObject.has(name)) {
-        val element = jsonObject[name]
+fun JsonObject.getFloatOrCreate(name: String, def: Float): Float {
+    if (has(name)) {
+        val element = this[name]
         if (element.isJsonPrimitive) {
             val primitive = element.getAsJsonPrimitive()
             if (primitive.isNumber) {
@@ -240,13 +240,13 @@ fun getFloatOrCreate(jsonObject: JsonObject, name: String?, def: Float): Float {
             }
         }
     }
-    jsonObject.addProperty(name, def)
+    addProperty(name, def)
     return def
 }
 
-fun getDoubleOrCreate(jsonObject: JsonObject, name: String?, def: Double): Double {
-    if (jsonObject.has(name)) {
-        val element = jsonObject[name]
+fun JsonObject.getDoubleOrCreate(name: String, def: Double): Double {
+    if (has(name)) {
+        val element = this[name]
         if (element.isJsonPrimitive) {
             val primitive = element.getAsJsonPrimitive()
             if (primitive.isNumber) {
@@ -254,7 +254,7 @@ fun getDoubleOrCreate(jsonObject: JsonObject, name: String?, def: Double): Doubl
             }
         }
     }
-    jsonObject.addProperty(name, def)
+    addProperty(name, def)
     return def
 }
 

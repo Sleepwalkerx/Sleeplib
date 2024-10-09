@@ -7,6 +7,7 @@ class ModalFillSprite(texture: TextureSource, uOffset: Int, vOffset: Int, uWidth
     ModalSprite(texture, uOffset, vOffset, uWidth, vHeight) {
 
     constructor(texture: TextureSource, uOffset: Int, vOffset: Int) : this(texture, uOffset, vOffset, texture.width, texture.height)
+    constructor(texture: TextureSource) : this(texture, texture.width, texture.height)
 
     override fun drawImage(matrixStack: UMatrixStack, x: Double, y: Double, width: Double, height: Double, color: Color) {
         texture.bind()
