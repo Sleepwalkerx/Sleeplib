@@ -28,7 +28,7 @@ val GSON: Gson = GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create(
 val GSON_WITHOUT_PRETTY: Gson = GsonBuilder().disableHtmlEscaping().create()
 
 @Throws(IOException::class)
-fun toJson(gson: Gson, jsonObject: JsonObject, file: File) {
+fun toJson(gson: Gson, jsonObject: JsonElement, file: File) {
     /*FileOutputStream(file).use { fileOutputStream ->
         OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8).use { writer ->
             JsonWriter(writer).use { jsonWriter ->
@@ -48,7 +48,7 @@ fun toJson(gson: Gson, jsonObject: JsonObject, file: File) {
 }
 
 @Throws(IOException::class)
-fun toJson(jsonObject: JsonObject, file: File) {
+fun toJson(jsonObject: JsonElement, file: File) {
     toJson(GSON, jsonObject, file)
 }
 
